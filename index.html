@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>UnificacionConAvisoDeFecha</title>
+    <link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <!-- ========================= -->
+<!-- LOGIN / REGISTRO -->
+<!-- ========================= -->
+<div id="auth" class="pantalla"
+style="background-image:url('https://raw.githubusercontent.com/teodoro124578-blip/M-YOU/main/Login.png')">
+
+  <div class="card">
+    <h1>M & YOU</h1>
+    <h3>Estilo y moda</h3>
+
+    <!-- LOGIN -->
+    <div id="login-form">
+      <input id="login-usuario" placeholder="Usuario">
+      <input id="login-clave" type="password" placeholder="Contraseña">
+
+      <label class="mostrar">
+        <input type="checkbox" onclick="togglePassword('login-clave')">
+        Mostrar contraseña
+      </label>
+
+      <button onclick="login()">Iniciar sesión</button>
+      <button class="link" onclick="mostrarRegistro()">Registrarse</button>
+    </div>
+
+    <!-- REGISTRO -->
+    <div id="registro-form" class="hidden">
+      <input id="reg-usuario" placeholder="Usuario">
+      <input id="reg-clave" type="password">
+      <input id="reg-nombre" placeholder="Nombre completo">
+      <input id="reg-email" placeholder="Correo">
+
+      <button onclick="registrar()">Crear cuenta</button>
+      <button class="link" onclick="mostrarLogin()">Volver</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- APP (SOLO UNA VEZ) -->
+<!-- ========================= -->
+<div id="app" class="hidden pantalla"
+style="background-image:url('https://raw.githubusercontent.com/teodoro124578-blip/M-YOU/main/Bienvenida.png')">
+
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <p id="bienvenida"></p>
+    </div>
+
+    <button onclick="cambiarSeccion('Solicitar Arreglo')">Solicitar Arreglo</button>
+    <button onclick="cambiarSeccion('Mis Arreglos')">Mis Arreglos</button>
+    <button onclick="cambiarSeccion('Garantías')">Garantías</button>
+    <button onclick="cambiarSeccion('Novedades')">Novedades</button>
+    <button onclick="cambiarSeccion('Promociones')">Promociones</button>
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
+  </aside>
+
+<div class="contenido">
+  <h2 id="titulo-seccion">Bienvenida</h2>
+
+  <!-- SECCIÓN: Solicitar Arreglo -->
+  <div id="seccion-solicitar-arreglo" class="hidden" style="font-family: Arial; max-width: 500px; margin: auto; padding: 20px; color: black;">
+
+    <label>Nombre del cliente:</label>
+    <input type="text" id="nombre_cliente" value="" readonly>
+
+   <label>Fecha de entrega:</label>
+<input type="date" id="fecha_inicio" onchange="actualizarFechaPrevia()"><br><br>
+
+<label>Urgencia:</label>
+<select id="urgencia" onchange="actualizarFechaPrevia()">
+  <option value="Urgente">Urgente</option>
+  <option value="Moderado">Moderado</option>
+  <option value="Normal">Normal</option>
+</select><br><br>
+
+<!-- Previsualización de fecha estimada -->
+<p id="fecha_previa" style="font-weight:bold; color:black; margin-top:5px;"></p>
+
+    <h3>Tipo de arreglo:</h3>
+    <div id="tipo_arreglo_container"></div>
+    <button type="button" onclick="agregarArreglo()">+ Agregar prenda</button>
+    <p>Por favor, colocar solo una prenda por casilla.</p><br>
+
+    <label>Teléfono:</label>
+    <input type="text" id="telefono" placeholder="Ej: 3101234567"><br><br>
+
+    <label>Tipo de entrega:</label>
+    <select id="tipo_entrega" onchange="mostrarDireccion()">
+      <option value="Local">Local</option>
+      <option value="Casa">Casa</option>
+    </select><br><br>
+
+    <div id="direccion_container" style="display:none">
+      <label>Dirección:</label>
+      <input type="text" id="direccion" placeholder="Ej: Casa, tercer piso"><br><br>
+    </div>
+
+    <label>Imagen del pedido:</label>
+    <input type="file" id="fileInput" style="width: 100%; margin-bottom: 10px;"><br>
+
+    <button id="btnRegistrar" onclick="registrarYSubir()">Registrar pedido</button>
+
+    <h3>Resultado:</h3>
+    <pre id="resultados"></pre>
+  </div>
+
+  <!-- Otras secciones -->
+  <div id="seccion-mis-arreglos" class="hidden">Mis arreglos...</div>
+  <div id="seccion-garantias" class="hidden">Garantías...</div>
+  <div id="seccion-novedades" class="hidden">Novedades...</div>
+  <div id="seccion-promociones" class="hidden">Promociones...</div>
+</div>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
