@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>UnificacionConAvisoDeFecha</title>
-    <link rel="stylesheet" href="./style.css">
-
-  </head>
-    
-  <body>
-  <!-- ========================= -->
+<!-- ========================= -->
 <!-- LOGIN / REGISTRO -->
 <!-- ========================= -->
 <div id="auth" class="pantalla"
@@ -71,60 +60,78 @@ style="background-image:url('https://raw.githubusercontent.com/teodoro124578-bli
   <h2 id="titulo-seccion">Bienvenida</h2>
 
   <!-- SECCIÓN: Solicitar Arreglo -->
-  <div id="seccion-solicitar-arreglo" class="hidden" style="font-family: Arial; max-width: 500px; margin: auto; padding: 20px; color: black;">
+  <div id="seccion-solicitar-arreglo" class="seccion hidden">
+    <div class="card-contenido">
 
-    <label>Nombre del cliente:</label>
-    <input type="text" id="nombre_cliente" value="" readonly>
+      <label>Nombre del cliente:</label>
+      <input type="text" id="nombre_cliente" value="" readonly>
 
-   <label>Fecha de entrega:</label>
-<input type="date" id="fecha_inicio" onchange="actualizarFechaPrevia()"><br><br>
+      <p class="espacio">
+        <label>Fecha de entrega:</label>
+        <input type="date" id="fecha_inicio" onchange="actualizarFechaPrevia()"><br><br>
 
-<label>Urgencia:</label>
-<select id="urgencia" onchange="actualizarFechaPrevia()">
-  <option value="Urgente">Urgente</option>
-  <option value="Moderado">Moderado</option>
-  <option value="Normal">Normal</option>
-</select><br><br>
+        <label>Urgencia:</label>
+        <select id="urgencia" onchange="actualizarFechaPrevia()">
+          <option value="Urgente">Urgente</option>
+          <option value="Moderado">Moderado</option>
+          <option value="Normal">Normal</option>
+        </select><br><br>
 
-<!-- Previsualización de fecha estimada -->
-<p id="fecha_previa" style="font-weight:bold; color:black; margin-top:5px;"></p>
+        <!-- Previsualización de fecha estimada -->
+        <p id="fecha_previa" style="font-weight:bold; color:black; margin-top:5px;"></p>
 
-    <h3>Tipo de arreglo:</h3>
-    <div id="tipo_arreglo_container"></div>
-    <button type="button" onclick="agregarArreglo()">+ Agregar prenda</button>
-    <p>Por favor, colocar solo una prenda por casilla.</p><br>
+        <h3>Tipo de arreglo:</h3>
+        <div id="tipo_arreglo_container"></div>
+        <button type="button" onclick="agregarArreglo()">+ Agregar prenda</button>
+        <p>Por favor, colocar solo una prenda por casilla.</p><br>
 
-    <label>Teléfono:</label>
-    <input type="text" id="telefono" placeholder="Ej: 3101234567"><br><br>
+        <label>Teléfono:</label>
+        <input type="text" id="telefono" placeholder="Ej: 3101234567"><br><br>
 
-    <label>Tipo de entrega:</label>
-    <select id="tipo_entrega" onchange="mostrarDireccion()">
-      <option value="Local">Local</option>
-      <option value="Casa">Casa</option>
-    </select><br><br>
+        <label>Tipo de entrega:</label>
+        <select id="tipo_entrega" onchange="mostrarDireccion()">
+          <option value="Local">Local</option>
+          <option value="Casa">Casa</option>
+        </select><br><br>
 
-    <div id="direccion_container" style="display:none">
-      <label>Dirección:</label>
-      <input type="text" id="direccion" placeholder="Ej: Casa, tercer piso"><br><br>
+        <div id="direccion_container" style="display:none">
+          <label>Dirección:</label>
+          <input type="text" id="direccion" placeholder="Ej: Casa, tercer piso"><br><br>
+        </div>
+
+        <label>Imagen del pedido:</label>
+        <input type="file" id="fileInput" style="width: 100%; margin-bottom: 10px;"><br>
+
+        <button id="btnRegistrar" onclick="registrarYSubir()">Registrar pedido</button>
+
+        <h3>Resultado:</h3>
+        <pre id="resultados"></pre>
     </div>
+  </div> <!-- cierre correcto de seccion-solicitar-arreglo -->
 
-    <label>Imagen del pedido:</label>
-    <input type="file" id="fileInput" style="width: 100%; margin-bottom: 10px;"><br>
+  <!-- SECCIÓN: Mis Arreglos -->
+  <div id="seccion-mis-arreglos" class="seccion hidden">
+    <div class="card-contenido">
 
-    <button id="btnRegistrar" onclick="registrarYSubir()">Registrar pedido</button>
+      <h2>Consultar Estado de Pedido</h2>
 
-    <h3>Resultado:</h3>
-    <pre id="resultados"></pre>
-  </div>
+      <!-- Nombre del usuario fijo -->
+      <input type="text" id="nombre" readonly placeholder="Nombre completo" style="background-color:#f0f0f0; margin-bottom:10px;">
 
-  <!-- Otras secciones -->
-  <div id="seccion-mis-arreglos" class="hidden">Mis arreglos...</div>
+      <!-- Botón para consultar pedidos -->
+      <button onclick="consultar()">Consultar</button>
+
+      <!-- Resultados -->
+      <div id="resultadosMisArreglos" style="margin-top:15px;"></div>
+    </div>
+  </div> <!-- cierre correcto de seccion-mis-arreglos -->
+
+  <!-- SECCIÓN: Garantías -->
   <div id="seccion-garantias" class="hidden">Garantías...</div>
-  <div id="seccion-novedades" class="hidden">Novedades...</div>
-  <div id="seccion-promociones" class="hidden">Promociones...</div>
-</div>
-    <script  src="./script.js"></script>
 
-  </body>
-  
-</html>
+  <!-- SECCIÓN: Novedades -->
+  <div id="seccion-novedades" class="hidden">Novedades...</div>
+
+  <!-- SECCIÓN: Promociones -->
+  <div id="seccion-promociones" class="hidden">Promociones...</div>
+</div> <!-- cierre de contenido -->
