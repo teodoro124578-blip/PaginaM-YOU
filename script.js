@@ -4,6 +4,9 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyLM82xZPvEFLRSMj1DwGuOxN4tHNpOrASMJHLRAUCSejChXK8Pw2AtW6ENQmDJ2IHlOA/exec"; // login/registro
 const API_PEDIDOS = "https://script.google.com/macros/s/AKfycbyRoPzcHZVxBjI14BEb7EAt-lys9Y-YePwHiNP0Jh5vS_XLMnDcF13YBELIcOUTpbf7tg/exec"; // pedidos
 const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxyYDYl0iN40fbvoBXjSviuAf1P62Cv23TmtG0NDNS_IGjdwb0NW9R40AcmuRLbyEiuHQ/exec"; // subir imagen
+const URL_APPS_SCRIPT =
+"https://script.google.com/macros/s/AKfycbz-yPwu0eaHgbx030J1RGEEPpxV21ysj9jjHwTQue91LQ0dIWyizmq0cGKK7I_2zwM4KQ/exec"; // Mirar Pedidos
+
 
 // =========================
 // DATOS DEL USUARIO
@@ -109,15 +112,16 @@ function cambiarSeccion(nombre){
   break;
 
 
-    case "Mis Arreglos":
-      document.getElementById("seccion-mis-arreglos").classList.remove("hidden");
-      break;
-    case "Garantías":
-      document.getElementById("seccion-garantias").classList.remove("hidden");
-      break;
-    case "Novedades":
-      document.getElementById("seccion-novedades").classList.remove("hidden");
-      break;
+case "Mis Arreglos":
+  document.getElementById("seccion-mis-arreglos").classList.remove("hidden");
+
+  const nombreMisArreglos = document.getElementById("nombre");
+  nombreMisArreglos.value = usuarioActual.nombre; // coloca nombre fijo
+  nombreMisArreglos.setAttribute("readonly", true); // no editable
+  nombreMisArreglos.style.backgroundColor = "#f0f0f0"; // opcional visual
+
+  break;
+
     case "Promociones":
       document.getElementById("seccion-promociones").classList.remove("hidden");
       break;
@@ -136,13 +140,59 @@ function cerrarSesion(){
 }
 
 // =========================
-// CÓDIGO #2: Registrar pedido y subir imagen
+// CÓDIGO #2: Registrar pedido y subir imagen (ARREGLADO + Mis Arreglos automático)
 // =========================
 const tipoArregloContainer = document.getElementById("tipo_arreglo_container");
 const btnRegistrar = document.getElementById("btnRegistrar");
-const resultados = document.getElementById("resultados");
+const resultadosMisArreglos = document.getElementById("resultadosMisArreglos"); // para sección Mis Arreglos
+const resultados = document.getElementById("resultados"); // para registrar pedido
 
-// Funciones auxiliares
+// --- CONSULTAR MIS ARREGLOS ---
+function consultar() {
+  const nombre = document.getElementById("nombre").value.trim();
+  if (!nombre) {
+    alert("Nombre vacío");
+    return;
+  }
+
+  resultadosMisArreglos.innerHTML = "<p>Consultando...</p>";
+
+  // Usamos JSONP para mantener la velocidad y compatibilidad
+  const script = document.createElement("script");
+  script.src = URL_APPS_SCRIPT +
+    "?nombre=" + encodeURIComponent(nombre) +
+    "&callback=procesarPedidos";
+  document.body.appendChild(script);
+}
+
+function procesarPedidos(data) {
+  resultadosMisArreglos.innerHTML = "";
+
+  if (!data.ok || data.pedidos.length === 0) {
+    resultadosMisArreglos.innerHTML = "<p>❌ No se encontraron pedidos con ese nombre.</p>";
+    return;
+  }
+
+  data.pedidos.forEach(p => {
+    const fecha = new Date(p.FechaDeArreglo);
+    fecha.setDate(fecha.getDate() + 1);
+    const fechaEntrega = fecha.toISOString().split("T")[0];
+
+    const imgLink = p.linkDrive.replace("/view", "/preview");
+
+    resultadosMisArreglos.innerHTML += `
+      <div class="resultado">
+        <p><b>ID Pedido:</b> ${p.id_pedido}</p>
+        <p><b>Fecha de entrega:</b> ${fechaEntrega}</p>
+        <p><b>Estado:</b> ${p.estado}</p>
+        <iframe src="${imgLink}" width="100%" height="400"></iframe>
+        <hr>
+      </div>
+    `;
+  });
+}
+
+// --- FUNCIONES AUXILIARES ---
 function agregarArreglo(valor = "") {
   const div = document.createElement("div");
   div.className = "arreglo";
@@ -170,27 +220,24 @@ function actualizarFechaPrevia() {
     return;
   }
 
-  // Días según urgencia
   let diasSumar = urgencia === "Urgente" ? 3 : urgencia === "Moderado" ? 6 : 9;
 
-  // Fecha calculada
   const fecha = new Date(fechaInicio);
-  fecha.setDate(fecha.getDate() + diasSumar + 1); // +1 para previsualización
+  fecha.setDate(fecha.getDate() + diasSumar + 1);
 
   const yyyy = fecha.getFullYear();
-  const mm = String(fecha.getMonth() + 1).padStart(2,'0');
-  const dd = String(fecha.getDate()).padStart(2,'0');
+  const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+  const dd = String(fecha.getDate()).padStart(2, '0');
 
   contenedor.innerText = "Tu prenda estaría lista para: " + `${yyyy}-${mm}-${dd}`;
 }
 
-// Función principal para registrar y subir imagen
+// --- REGISTRAR PEDIDO Y SUBIR IMAGEN ---
 async function registrarYSubir() {
   btnRegistrar.disabled = true;
   resultados.textContent = "⏳ Procesando registro de pedido...";
 
   try {
-    // 1️⃣ Recoger datos del formulario
     const nombreCliente = document.getElementById("nombre_cliente").value;
     const telefono = document.getElementById("telefono").value;
     const tipoEntrega = document.getElementById("tipo_entrega").value;
@@ -204,20 +251,19 @@ async function registrarYSubir() {
       btnRegistrar.disabled = false;
       return;
     }
+
     const tipoArreglo = Array.from(arrInputs).map(i => i.value.trim()).filter(v => v.length > 0).join("||");
     const cantidadArreglos = arrInputs.length;
 
-    // Determinar días según urgencia
     let diasSumar = urgencia === "Urgente" ? 3 : urgencia === "Moderado" ? 6 : 9;
-
     const fechaConsulta = new Date(fechaInicio);
     fechaConsulta.setDate(fechaConsulta.getDate() + diasSumar);
+
     const yyyyC = fechaConsulta.getFullYear();
     const mmC = String(fechaConsulta.getMonth() + 1).padStart(2, '0');
     const ddC = String(fechaConsulta.getDate()).padStart(2, '0');
     const fechaConsultaStr = `${yyyyC}-${mmC}-${ddC}`;
 
-    // 2️⃣ Verificar disponibilidad
     const resDisponibilidad = await fetch(`${API_PEDIDOS}?action=check_disponibilidad&fecha=${fechaConsultaStr}`);
     const disponibilidad = await resDisponibilidad.json();
 
@@ -227,12 +273,10 @@ async function registrarYSubir() {
       return;
     }
 
-    // 3️⃣ Consultar último ID
     const resId = await fetch(`${API_PEDIDOS}?action=get_last_id`);
     const lastId = await resId.json();
     const idPedido = lastId.last_id + 1;
 
-    // 4️⃣ Registrar pedido
     const params = new URLSearchParams({
       action: "add_pedido",
       id_pedido: idPedido,
@@ -258,7 +302,6 @@ async function registrarYSubir() {
 
     resultados.textContent = "✅ Pedido registrado correctamente.\n⏳ Subiendo imagen...";
 
-    // 5️⃣ Subir imagen al Web App
     const fileInput = document.getElementById("fileInput");
     if (!fileInput.files[0]) {
       resultados.textContent += "\n⚠ No se seleccionó ninguna imagen.";
@@ -270,7 +313,6 @@ async function registrarYSubir() {
     const reader = new FileReader();
     reader.onload = async function(e) {
       const base64 = e.target.result.split(",")[1];
-
       const data = new URLSearchParams();
       data.append("idPedido", idPedido);
       data.append("file", base64);
